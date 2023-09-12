@@ -1,6 +1,4 @@
-from collections.abc import Callable, Iterable, Mapping
 import multiprocessing
-from typing import Any
 from etl import ETL
 from manager import Manager
 from mq_manager import MQManager
