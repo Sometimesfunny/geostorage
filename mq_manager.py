@@ -1,13 +1,18 @@
 from typing import Any
 import pika
 from utils import from_json, to_json
+from pika.exceptions import AMQPConnectionError
 
 
 class MQManager:
     all_queues: set[str] = set()
 
     def __init__(self, ip: str = "localhost") -> None:
-        self.connection = pika.BlockingConnection(pika.ConnectionParameters(ip))
+        try:
+            self.connection = pika.BlockingConnection(pika.ConnectionParameters(ip))
+        except AMQPConnectionError as e:
+            print('RabbitMQ connection error! Please make sure RabbitMQ is running.')
+            raise e
         self.channel = self.connection.channel()
 
     def add_queue(self, name: str):

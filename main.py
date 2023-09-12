@@ -38,9 +38,15 @@ class WorkerProcess(multiprocessing.Process):
 
 
 def main():
-    workers_number = int(input("Please input number of workers: "))
+    workers_number = 0
+    while workers_number < 1:
+        workers_number = int(input("Please input number of workers (>0): "))
 
-    etl_process = ETLProcess("vienna-streets.geojson", workers_number)
+    mode = 0
+    while mode not in (1, 2):
+        mode = int(input("Choose starter mode:\n1. Run all instances\n2. Run all, except client\n"))
+
+    etl_process = ETLProcess("roads/vienna-streets.geojson", workers_number)
     manager_process = ManagerProcess()
 
     etl_process.start()
@@ -52,10 +58,12 @@ def main():
         process.start()
         worker_processes.append(process)
 
-    client = Client()
+    if mode == 1:
+        client = Client()
 
     etl_process.join()
-    client.run_console()
+    if mode == 1:
+        client.run_console()
     manager_process.join()
 
     for process in worker_processes:
@@ -65,5 +73,6 @@ def main():
 if __name__ == "__main__":
     try:
         main()
-    except:
+    except Exception as e:
+        print(e)
         MQManager.delete_all_queues()
