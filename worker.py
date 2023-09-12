@@ -10,9 +10,6 @@ class Worker:
         self.mq_manager.add_queue(f"worker_{self.worker_id}")
         self.mq_manager.add_queue("manager")
 
-    # def receive_data(self):
-    #     self.data = self.mq_manager.get_message(f"worker_{self.worker_id}")
-
     def proceed_requests(self):
         while True:
             data = self.mq_manager.get_message(f"worker_{self.worker_id}")
@@ -30,3 +27,9 @@ class Worker:
                 )
             elif data.get("command") == COMMAND_META:
                 self.data = data.get("data", {})
+
+
+if __name__ == "__main__":
+    worker_id = int(input("Input worker id: "))
+    worker = Worker(worker_id)
+    worker.proceed_requests()

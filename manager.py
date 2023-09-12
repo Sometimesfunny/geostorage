@@ -16,9 +16,15 @@ class Manager:
             data = self.mq_manager.get_message("manager")
             if data.get("command") == COMMAND_ROAD_BY_ID:
                 data = self.get_road(data["data"])
-                self.mq_manager.send_message("client", {"command": COMMAND_ROAD_BY_ID, "data": data if data else []})
+                self.mq_manager.send_message(
+                    "client",
+                    {"command": COMMAND_ROAD_BY_ID, "data": data if data else []},
+                )
             elif data.get("command") == COMMAND_ALL_ROADS:
-                self.mq_manager.send_message("client", {"command": COMMAND_ALL_ROADS, "data": self.get_road_ids()})
+                self.mq_manager.send_message(
+                    "client",
+                    {"command": COMMAND_ALL_ROADS, "data": self.get_road_ids()},
+                )
             elif data.get("command") == COMMAND_QUIT:
                 self.exit()
                 return
@@ -52,7 +58,10 @@ class Manager:
             block_numbers.add(part[0])
         block_data = {}
         for block_number in block_numbers:
-            self.mq_manager.send_message(f"worker_{block_number}", {"command": COMMAND_ROAD_BY_ID, "data": road_id})
+            self.mq_manager.send_message(
+                f"worker_{block_number}",
+                {"command": COMMAND_ROAD_BY_ID, "data": road_id},
+            )
         for block_number in block_numbers:
             data = self.mq_manager.get_message(f"manager")
             block_data[data.get("block_number")] = data.get("data")
@@ -66,3 +75,8 @@ class Manager:
             )
             data_pointers[part[0]] += part[1]
         return output_data
+
+
+if __name__ == "__main__":
+    manager = Manager()
+    manager.proceed_requests()

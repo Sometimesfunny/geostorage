@@ -88,10 +88,17 @@ class ETL:
 
     def send_all(self):
         self.mq_manager.send_message(
-            "manager", {"command": COMMAND_META, "blocks_number": self.blocks_number, "meta": self.meta}
+            "manager",
+            {
+                "command": COMMAND_META,
+                "blocks_number": self.blocks_number,
+                "meta": self.meta,
+            },
         )
         for i in range(self.blocks_number):
-            self.mq_manager.send_message(f"worker_{i}", {"command": COMMAND_META, "data": self.data_to_send[i]})
+            self.mq_manager.send_message(
+                f"worker_{i}", {"command": COMMAND_META, "data": self.data_to_send[i]}
+            )
 
     def load_data(self) -> None:
         with open(self.filename, "r") as f:
@@ -155,3 +162,10 @@ class ETL:
             max(data, key=lambda x: x[1])[1],
         )
         return rectangle
+
+
+if __name__ == "__main__":
+    filename: str = input("Input filename please: ")
+    blocks_number = int(input("Input blocks number: "))
+    etl = ETL(filename, blocks_number)
+    etl.send_all()

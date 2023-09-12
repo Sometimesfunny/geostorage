@@ -38,13 +38,6 @@ class WorkerProcess(multiprocessing.Process):
         self.worker.proceed_requests()
         print(f"Worker {self.worker_id} finished")
 
-# class ClientProcess(multiprocessing.Process):
-#     def __init__(self) -> None:
-#         self.client = Client()
-#         super().__init__()
-    
-#     def run(self):
-#         self.client.run_console()
 
 def main():
     workers_number = int(input("Please input number of workers: "))
@@ -61,15 +54,11 @@ def main():
         process.start()
         worker_processes.append(process)
 
-    # client_process = ClientProcess()
-    # client_process.start()
-
     client = Client()
 
     etl_process.join()
     client.run_console()
     manager_process.join()
-    # client_process.join()
 
     for process in worker_processes:
         process.join()

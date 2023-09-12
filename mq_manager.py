@@ -17,7 +17,6 @@ class MQManager:
     def get_message(self, queue_name: str):
         for raw_data in self.channel.consume(queue_name, auto_ack=True):
             data = from_json(raw_data[2].decode())
-            # self.channel.cancel()
             break
         return data
 
